@@ -1,0 +1,6 @@
+# Python 3.14 (launcher "py"). Instalar: py -m pip install -r requirements.txt
+pywin32>=312        # automacao COM do GstarCAD (Gcad.Application)
+shapely>=2.2        # geometria: ambientes, paredes, areas
+numpy>=2.5          # texturas da planta humanizada
+pillow>=13.0        # imagens, amostras de legenda, texturas
+pymupdf>=2.0        # PDF vetorial da prancha e leitura do croqui

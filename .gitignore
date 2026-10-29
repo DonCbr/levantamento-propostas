@@ -1,0 +1,16 @@
+# Dados de cliente nunca entram no repositorio (ficam em C:\Dev\CAD\<Cliente>\)
+*.dwg
+*.bak
+*.dxf
+*.pdf
+*.png
+*.jpg
+*.mp4
+*.mov
+# Gerados / baixados (refazer com modelos3d.py e gera_3d.py)
+**/apresentacao-3d/_cache/
+**/apresentacao-3d/modelos/
+**/apresentacao-3d/texturas/
+**/apresentacao-3d/casa-*-3d.html
+__pycache__/
+*.pyc
