@@ -36,6 +36,14 @@ def _deck(U, V, s):
     out[((V % t) < 2) | (((U + off) % (180 * s)) < 2)] = (164, 122, 80)
     return out
 
+def _madeira(U, V, s):
+    out = _cor((222, 196, 160), U); t = 20 * s; comp = 140 * s
+    row = (V // t).astype(np.int64); off = _h2(row, row * 0 + 5, 6) * comp
+    tom = 1 + (_h2(row, ((U + off) // comp).astype(np.int64), 7) - 0.5) * 0.08
+    out *= tom[..., None]
+    out[((V % t) < 2) | (((U + off) % comp) < 2)] = (196, 166, 126)
+    return out
+
 def _gramado(U, V, s):
     out = _cor((147, 184, 105), U); t = 70 * s
     out[(((U + V) % t) < 2.5) | (((U - V) % t) < 2.5)] = (132, 170, 93)
@@ -60,10 +68,11 @@ MAT = {
     "porc90": _grade((239, 235, 229), (219, 214, 206), 90), "porc60": _grade((242, 242, 240), (221, 221, 217), 60),
     "box": _grade((231, 234, 234), (209, 213, 213), 30), "drenante": _grade((215, 213, 209), (195, 193, 188), 50),
     "pedra": _grade((237, 231, 221), (214, 206, 193), 50), "concreto": _grade((220, 218, 214), (201, 199, 195), 100),
-    "deck": _deck, "gramado": _gramado, "pedrisco": _pedrisco, "piscina": _piscina, "travertino": _travertino,
+    "deck": _deck, "madeira": _madeira, "gramado": _gramado, "pedrisco": _pedrisco, "piscina": _piscina, "travertino": _travertino,
 }
 LEGENDA_PADRAO = {   # tipo -> texto (o projeto escolhe quais entram)
     "parede": "PAREDE (ALVENARIA)", "porc90": "PORCELANATO 90×90 – ÁREAS SECAS", "porc60": "PORCELANATO 60×60 – ÁREAS MOLHADAS",
+    "madeira": "PISO AMADEIRADO (SALAS E QUARTOS)",
     "deck": "DECK DE MADEIRA", "drenante": "PISO DRENANTE", "pedra": "PEDRA NATURAL", "concreto": "CALÇADA EM CONCRETO",
     "travertino": "TRAVERTINO (BANCADAS)", "piscina": "PISCINA", "gramado": "JARDIM / GRAMADO",
     "pedrisco": "CANTEIRO (PEDRISCO CLARO) E PAISAGISMO", "projecao": "PROJEÇÃO DA COBERTURA", "esquadria": "ESQUADRIAS / VIDRO",

@@ -33,4 +33,4 @@ Tudo nasce de scripts Python: as medidas ficam em código, e o DWG, o PDF e o 3D
 - Fora do Git: croquis, fotos, vídeos, DWG e PDFs de clientes, que ficam na pasta do cliente em `C:\Dev\CAD\`.
 
 ## Licenças dos assets 3D
-Modelos e texturas vêm do [Poly Haven](https://polyhaven.com) (**CC0**, domínio público). São baixados por `modelos3d.py` e não ficam no repositório. Os demais móveis são modelados no próprio `modelo.html`.
+Modelos e texturas vêm do [Poly Haven](https://polyhaven.com) (**CC0**, domínio público). O carro é o "Car Concept" dos [glTF Sample Assets da Khronos](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CarConcept) (**CC BY 4.0**, crédito obrigatório, já exibido na página 3D). São baixados por `modelos3d.py` e não ficam no repositório. Os demais móveis são modelados no próprio `modelo.html`.

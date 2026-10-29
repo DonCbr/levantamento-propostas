@@ -235,6 +235,7 @@ function porcelanato(lado, base, junta) {      // placa quase lisa com rejunte (
   return (matR[k] = compart(new THREE.MeshStandardMaterial({ map: t, roughness: 0.3, metalness: 0 })));
 }
 const PISO_R = {
+  madeira: () => matTex("piso_madeira", 1.8, 0xfff4e6, { roughness: 0.55 }),
   porc90: () => porcelanato(0.9, "#e8e3db", "#cdc6bb"), porc60: () => porcelanato(0.6, "#efefec", "#d0d0cb"),
   deck: () => matR.deck || (matR.deck = compart(new THREE.MeshStandardMaterial({ map: tex("madeira_diff", 1 / 1.4, true), normalMap: tex("deck_nor", 1 / 1.6), roughness: 0.75, color: 0xc89a6c }))), drenante: () => matTex("pavers", 1.0, 0xf4f1ec), pedra: () => matTex("pedra", 1.2, 0xfff6e8),
   gramado: () => matTex("grama", 2.0, 0x8fd06a), pedrisco: () => matTex("pedrisco", 0.8, 0xf7efe2),
@@ -364,13 +365,31 @@ function tvSobre(g, W, D) {                       // TV de parede sobre o rack
   const L = Math.min(W * 0.72, 1.45), H = L * 0.5625;
   mk(box(L, H, 0.03), mr("preto"), 0, 0.62, -D / 2 + 0.05, g); mk(box(L * 0.9, H * 0.9, 0.002), matLiso(0x1c2a33, { roughness: 0.05, metalness: 0.4 }), 0, 0.62 + H * 0.05, -D / 2 + 0.066, g);
 }
+/* carro: materiais refeitos (o three.js 0.128 ignora o 3o mapa UV da pintura original e ela sai manchada) */
+const COR_CARRO = 0x1f2a35;                       /* cinza-azulado metalico; trocar aqui para outra cor */
+const MCARRO = {};
+function matCarro(k) {
+  if (MCARRO[k]) return MCARRO[k];
+  const P = (o) => compart(new THREE.MeshPhysicalMaterial(o));
+  const d = { pintura: () => P({ color: COR_CARRO, metalness: 0.55, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.04 }),
+    vidro: () => P({ color: 0x141a20, metalness: 0.2, roughness: 0.03, transparent: true, opacity: 0.88, clearcoat: 1 }),
+    roda: () => P({ color: 0xc4c8cc, metalness: 1, roughness: 0.28 }), pneu: () => P({ color: 0x161616, roughness: 0.92 }),
+    escuro: () => P({ color: 0x1c1d1f, roughness: 0.7 }), banco: () => P({ color: 0x3a312b, roughness: 0.6 }) };
+  return (MCARRO[k] = d[k]());
+}
+function pintaCarro(o) {
+  const n = o.name;
+  if (/Headlights|Taillights|Turnsignals|License/.test(n)) return;
+  o.material = matCarro(/Windshield$/.test(n) ? "vidro" : /^Body(Roof|Rear|WindshieldGasket|Door)/.test(n) ? "pintura"
+    : /^mesh_20/.test(n) || /Brake/.test(n) ? "roda" : /^mesh_19/.test(n) ? "pneu" : /Seats/.test(n) ? "banco" : "escuro");
+}
 const CAT = {   /* tipo -> GLB (apresentacao-3d/modelos); "uniforme" mantem a proporcao dentro da pegada, "esticar" ajusta a pegada e a altura h */
   poltrona: { glb: "modern_arm_chair_01", modo: "uniforme" }, poltrona_lounge: { glb: "mid_century_lounge_chair", modo: "uniforme" },
   mesa_centro: { glb: "modern_coffee_table_01", modo: "esticar", giro: 90, h: 0.4 }, mesa_centro_redonda: { glb: "coffee_table_round_01", modo: "uniforme", h: 0.42 },
   criado: { glb: "side_table_01", modo: "esticar", h: 0.55 }, cadeira_jantar: { glb: "dining_chair_02", modo: "uniforme" },
   rack_tv: { glb: "modern_wooden_cabinet", modo: "esticar", h: 0.48, depois: tvSobre },
   planta_grande: { glb: "potted_plant_02", modo: "uniforme" }, planta_pequena: { glb: "potted_plant_04", modo: "uniforme" },
-  carro: { glb: "covered_car", modo: "uniforme" },
+  carro: { glb: "CarConcept", modo: "uniforme", caixa: "Body", chao: true, comp: 4.45, pinta: pintaCarro },   /* caixa so da carroceria (rodas quantizadas inflam o bbox) */
 };
 const gltfL = new THREE.GLTFLoader(), cacheGlb = {};
 function glb(nome) {
@@ -384,10 +403,16 @@ function glb(nome) {
   }));
 }
 function encaixa(modelo, W, D, cat) {
-  const giro = new THREE.Group(); giro.add(modelo.clone(true)); giro.rotation.y = (cat.giro || 0) * Math.PI / 180;
-  const b = new THREE.Box3().setFromObject(giro), t = b.getSize(new THREE.Vector3()), c = b.getCenter(new THREE.Vector3());
+  const giro = new THREE.Group(), copia = modelo.clone(true); giro.add(copia);
+  if (cat.pinta) copia.traverse(o => { if (o.isMesh) cat.pinta(o); }); giro.rotation.y = (cat.giro || 0) * Math.PI / 180;
+  const b = new THREE.Box3();
+  if (cat.caixa) { giro.updateMatrixWorld(true); giro.traverse(o => { if (o.isMesh && o.name.startsWith(cat.caixa)) b.expandByObject(o); }); }
+  else b.setFromObject(giro);
+  if (cat.chao) b.min.y = 0;
+  const t = b.getSize(new THREE.Vector3()), c = b.getCenter(new THREE.Vector3());
   let kx, ky, kz;
   if (cat.modo === "esticar") { kx = W / t.x; kz = D / t.z; ky = cat.h ? cat.h / t.y : Math.min(kx, kz); }
+  else if (cat.comp) { kx = ky = kz = cat.comp / Math.max(t.x, t.z); }
   else { kx = ky = kz = Math.min(W / t.x, D / t.z, cat.h ? cat.h / t.y : 1e9); }
   const esc = new THREE.Group(); giro.position.set(-c.x, -b.min.y, -c.z); esc.add(giro); esc.scale.set(kx, ky, kz); return esc;
 }
@@ -509,7 +534,7 @@ function mostra(id) {
     <div class="numeros">${f.nums.map(([v, l]) => `<div><b>${v}</b><small>${l}</small></div>`).join("")}</div>
     <div><h3>Destaques</h3><ul>${f.itens.map(t => `<li>${t}</li>`).join("")}</ul></div>
     <div><h3>Cores dos pisos</h3><div class="legenda">${usados.map(k => `<span><i style="background:${CORES[k]}"></i>${NOMES_CORES[k]}</span>`).join("")}</div></div>
-    <p class="rodape">Maquete de estudo, sem cobertura, para leitura dos ambientes. Paredes com 2,80 m; volume do estar com pé-direito duplo de 5,60 m. Medidas sujeitas à conferência em obra.</p>`;
+    <p class="rodape">Maquete de estudo, sem cobertura, para leitura dos ambientes. Paredes com 2,80 m; volume do estar com pé-direito duplo de 5,60 m. Medidas sujeitas à conferência em obra.</p>${DADOS.cenarios[i].extras && DADOS.cenarios[i].extras.itens ? `<p class="rodape">Modelos 3D: Poly Haven (CC0); carro "Car Concept" © 2024 Darmstadt Graphics Group, por Eric Chadwick (Khronos), CC BY 4.0.</p>` : ""}`;
 }
 const marca = (b, v) => b.setAttribute("aria-pressed", String(v));
 document.getElementById("b3d").addEventListener("click", vista3d);

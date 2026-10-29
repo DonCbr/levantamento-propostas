@@ -1,6 +1,6 @@
 # Créditos dos assets 3D
 
-Todos CC0 (domínio público), de [Poly Haven](https://polyhaven.com).
+Poly Haven: CC0 (domínio público), https://polyhaven.com. Khronos: CC BY 4.0 (crédito obrigatório).
 
 - Modelo `modern_arm_chair_01` (poltrona): https://polyhaven.com/a/modern_arm_chair_01
 - Modelo `mid_century_lounge_chair` (poltrona_lounge): https://polyhaven.com/a/mid_century_lounge_chair
@@ -11,7 +11,7 @@ Todos CC0 (domínio público), de [Poly Haven](https://polyhaven.com).
 - Modelo `modern_wooden_cabinet` (rack): https://polyhaven.com/a/modern_wooden_cabinet
 - Modelo `potted_plant_02` (planta_grande): https://polyhaven.com/a/potted_plant_02
 - Modelo `potted_plant_04` (planta_pequena): https://polyhaven.com/a/potted_plant_04
-- Modelo `covered_car` (carro): https://polyhaven.com/a/covered_car
+- Modelo `CarConcept` (carro): Car Concept © 2024 Darmstadt Graphics Group GmbH, modelo e texturas de Eric Chadwick (Khronos glTF Sample Assets), CC BY 4.0. https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CarConcept
 - Textura `wood_floor_deck` (deck): https://polyhaven.com/a/wood_floor_deck
 - Textura `leafy_grass` (grama): https://polyhaven.com/a/leafy_grass
 - Textura `bicolour_gravel` (pedrisco): https://polyhaven.com/a/bicolour_gravel
@@ -22,4 +22,5 @@ Todos CC0 (domínio público), de [Poly Haven](https://polyhaven.com).
 - Textura `rough_linen` (linho): https://polyhaven.com/a/rough_linen
 - Textura `oak_veneer_01` (madeira): https://polyhaven.com/a/oak_veneer_01
 - Textura `white_oak_veneer` (madeira_clara): https://polyhaven.com/a/white_oak_veneer
+- Textura `laminate_floor_02` (piso_madeira): https://polyhaven.com/a/laminate_floor_02
 - Iluminação: céu procedural gerado na página (sem arquivo).

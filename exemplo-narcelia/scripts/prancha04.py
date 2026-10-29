@@ -16,9 +16,11 @@ INTERNAS = [("SALA DE ESTAR", "ESTAR (PE-DIREITO DUPLO)"), ("SALA DE TV", "SALA 
             ("SUÍTE 02", "SUITE 2"), ("BANHO 02", "BANHO SUITE 2"), ("SUÍTE MASTER", "SUITE MASTER"),
             ("CLOSET MASTER", "CLOSET MASTER"), ("BANHO MASTER", "BANHO MASTER"), ("BANHO LAZER", "BANHO LAZER"),
             ("ÁREA DE SERVIÇO", "AREA DE SERVICO COBERTA"), ("ÁREA GOURMET", "GOURMET")]
+SECOS_MADEIRA = {"ESTAR (PE-DIREITO DUPLO)", "SALA DE TV", "SUITE 1", "SUITE 2", "SUITE MASTER", "CLOSET MASTER"}
 MOLHADAS = {"LAVABO", "BANHO SUITE 1", "BANHO SUITE 2", "BANHO MASTER", "BANHO LAZER", "AREA DE SERVICO COBERTA"}
 def piso_de(nome):
     if nome in MOLHADAS: return "porc60"
+    if nome in SECOS_MADEIRA: return "madeira"
     return {"JARDIM DE INVERNO": "pedrisco", "AREA DE SERVICO DESCOBERTA": "drenante"}.get(nome, "porc90")
 
 paredes = unary_union([P.paredes(P.ROOMS, P.OPENINGS, P.WINDOWS)] + P.EXTRA)
@@ -81,7 +83,7 @@ def cotas(pr, pg):
             pr.lin(pg, pr.mm(*p), pr.mm(*q), (0.92, 0.55, 0.55), 0.2)
 
 # ---------------- blocos da folha ----------------
-LEGENDA = ["parede", "porc90", "porc60", "deck", "drenante", "pedra", "travertino",
+LEGENDA = ["parede", "madeira", "porc90", "porc60", "deck", "drenante", "pedra", "travertino",
            "piscina", "gramado", "pedrisco", "projecao", "esquadria"]
 def blocos(pr, pg):
     y = pr.legenda(pg, 20, 278, LEGENDA, colunas=2, larg=110)
